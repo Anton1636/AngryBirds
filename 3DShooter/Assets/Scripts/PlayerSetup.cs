@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 [System.Obsolete]
+[RequireComponent(typeof(Player))]
 public class PlayerSetup : NetworkBehaviour
 {
     [SerializeField]
@@ -15,7 +16,7 @@ public class PlayerSetup : NetworkBehaviour
 
     private void Start()
     {
-        if(!isLocalPlayer)
+        if (!isLocalPlayer)
         {
             for (int i = 0; i < componentsToDisable.Length; i++)
             {
@@ -27,12 +28,20 @@ public class PlayerSetup : NetworkBehaviour
         {
             scaneCamera = Camera.main;
 
-            if(scaneCamera != null)
+            if (scaneCamera != null)
             {
                 scaneCamera.gameObject.SetActive(false);
             }
         }
-        transform.name = "Player" + GetComponent<NetworkIdentity>().netId;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        string netID = GetComponent<NetworkIdentity>().netId.ToString();
+        Player player = GetComponent<Player>();
+        GameManager.RegisterPlayer(netID, player);
     }
 
     private void OnDisable()
@@ -41,5 +50,6 @@ public class PlayerSetup : NetworkBehaviour
         {
             scaneCamera.gameObject.SetActive(true);
         }
+        GameManager.UnRegisterPlayer(transform.name);
     }
 }
