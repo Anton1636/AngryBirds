@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[System.Obsolete]
 public class PlayerSetup : NetworkBehaviour
 {
+    [SerializeField]
+    private string remoteLauer = "RemotePlayer";
     private Camera scaneCamera;
 
     [SerializeField]
@@ -18,6 +21,7 @@ public class PlayerSetup : NetworkBehaviour
             {
                 componentsToDisable[i].enabled = false;
             }
+            gameObject.layer = LayerMask.NameToLayer(remoteLauer);
         }
         else
         {
@@ -28,6 +32,7 @@ public class PlayerSetup : NetworkBehaviour
                 scaneCamera.gameObject.SetActive(false);
             }
         }
+        transform.name = "Player" + GetComponent<NetworkIdentity>().netId;
     }
 
     private void OnDisable()
